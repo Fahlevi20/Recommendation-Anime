@@ -115,59 +115,30 @@ Insight yang saya dapatkan disni adalah:
 
 
 ## Data Preparation
-Sebelum datasetnya di latih atau training, dari model sebelumnya perlu melakukan data preparation dengan melakukan textmemeriksa rating dengan nilai -1 yang kemudian dianggap sebagai outlier dan saya ubah menjadi NaN lalu saya bersihkan. Setelah itu, saya membuat variabel fix_anime yang berisi dataframe hasil penggabungan variabel anime dan variabel rating kemudian saya urutkan berdasarkan ID anime.
-Pada data preparation, saya memeriksa rating dengan nilai -1 yang kemudian dianggap sebagai outlier dan saya ubah menjadi NaN lalu saya bersihkan. Setelah itu, saya membuat variabel fix_anime yang berisi dataframe hasil penggabungan variabel anime dan variabel rating kemudian saya urutkan berdasarkan ID anime.
-
-![image](https://user-images.githubusercontent.com/87566521/139247004-6fcf2488-8242-4426-9d23-c30e56996e34.png)
-
-Pada proyek ini, saya hanya akan menggunakan data unik untuk dimasukkan ke dalam proses pemodelan. Oleh karena itu, data yang duplikat akan saya hapus dengan fungsi drop_duplicates(). Dalam hal ini, saya membuang data duplikat pada kolom ‘anime_id’.
-
-![image](https://user-images.githubusercontent.com/87566521/139247281-17121e4f-b30c-4895-9fbf-7d6c8301b8c4.png)
-
-Setelah menghapus data duplikat, jumlah data saat ini adalah 9892 baris dan 9 kolom. Setelah itu, saya juga membuat visualisasi data untuk kolom `type`, kolom `rating`, dan kolom `rating_user` agar informasi dapat lebih mudah dipahami.
-
-![image](https://user-images.githubusercontent.com/87566521/139247657-1e7ab0ae-6b4a-4893-b072-89d10024a56b.png)
-
-Dari hasil visualisasi di atas, dapat disimpulkan bahwa anime ditayangkan lebih banyak di TV dan di OVA.
-
-![image](https://user-images.githubusercontent.com/87566521/139247793-0f6d92a8-2bad-482c-b3fb-ebd9dc5c626e.png)
-
-Dari hasil visualisasi di atas, dapat disimpulkan bahwa rata-rata rating melalui ulasan website adalah kebanyakan di antara 6 dan 7.
-
-![image](https://user-images.githubusercontent.com/87566521/139247919-7dda3518-6e18-4bb3-a02e-9e9d268894ea.png)
-
-Berdasarkan visualisasi di atas, dapat disimpulkan bahwa rating berdasarkan ID Pengguna paling banyak adalah 7 dan diikuti dengan 6 dan 8.
-
-Saya juga menampilkan genre mana saja yang paling sering muncul dengan menggunakan word clouds plot.
-
-![image](https://user-images.githubusercontent.com/87566521/139248116-14b2afa4-81f9-438c-8e1a-6a5134b3db42.png)
-
-Berdasarkan plot yang telah dibuat, dapat dilihat bahwa genre yang paling sering muncul adalah Sci Fi, Comedy, Adventure, Slice Life, dan Action.
-
-Langkah selanjutnya adalah saya melakukan konversi data series menjadi list. Dalam hal ini, saya menggunakan fungsi tolist() dari library numpy. Lalu saya akan melakukan persiapan data untuk menyandikan (encode) kolom ‘user_id’ dan ‘anime_id’ ke dalam indeks integer. Berikut adalah sebagian outputnya :
-
-![image](https://user-images.githubusercontent.com/87566521/139248366-f8b26e0d-7de9-4274-8e5f-5efb8a67e356.png)
+sebelum membuat model, perlunya  melakukan pada data preparation adalah menduplikasi variabel dan juga text cleaning agar dapat memberikan hasil rekomendasi yang baik
+- **Duplikasi variabel dataset**
+melakukan duplikasi pada variabel **`df1`** lalu data duplikasi ditampung pada variabel **`df1_data`** sehingga dataset pada variabel **`df1`** yang menampung dataset induk tidak terkontaminasi dan bisa digunakan kembali jika saya ingin mengembangkan model rekomendasi.
+- **Text Cleaning**
+ melakukan text cleaning pada kolom **`name`** untuk menghilangkan simbol atau teks yang tidak diperlukan dengan cara menggunakan teknik Regex agar membuat function yang bernama `text cleaning` dan mengaplikasikannya pada **`df1_data`**
 
 ## Modeling and Result
-
-Untuk tahap modeling, saya akan menggunakan Neural Network dan Cosine Similarity. Model Deep Learning akan saya gunakan untuk Sistem Rekomendasi berbasis Collaborative Filtering yang mana model ini akan menghasilkan rekomendasi untuk satu pengguna. Cosine Similarity akan saya gunakan untuk Sistem Rekomendasi berbasis Content-Based Filtering yang akan menghitung kemiripan antara satu film dengan lainnya berdasarkan fitur yang terdapat pada satu film. Berikut penjelasan tahapannya :
-
-### Content-based Filtering
+Pada Proyek yang dibuat, tahapan modelling yang digunakan dalam teknik sistem rekomendasi ***Content Based Filtering***. Karena dapat merekomendasikan pengguna berdasarkan konten genre. Sehingga acuan yang dibuat berdasarkan genre.
+#### Content-based Filtering
 
 Langkah pertama, saya menggunakan TF-IDF Vectorizer untuk menemukan representasi fitur penting dari setiap genre anime. Fungsi yang saya gunakan adalah tfidfvectorizer() dari library sklearn. Berikut sebagian outputnya :
-
-![image](https://user-images.githubusercontent.com/87566521/139250019-95314289-02fd-4302-9420-bb9258abde37.png)
-
-Selanjutnya saya melakukan fit dan transformasi ke dalam bentuk matriks. Outputnya adalah matriks berukuran (9892, 47). Nilai 9892 merupakan ukuran data dan 47 merupakan matrik genre anime.
-
+![genre](https://github.com/Fahlevi20/Recommendation-Anime/blob/97c6b782ed5b9957ba61121b56466931267522a8/visualization/genre.jpg)
+Selanjutnya saya melakukan fit dan transformasi ke dalam bentuk matriks. Outputnya adalah matriks yang merupakan matrik genre anime.
 Untuk menghitung derajat kesamaan (similarity degree) antar anime, saya menggunakan teknik cosine similarity dengan fungsi cosine_similarity dari library sklearn. Berikut adalah rumusnya :
 
-![image](https://user-images.githubusercontent.com/87566521/139251819-b8374a64-67ac-4fc3-82f5-02ff7a6b1b05.png)
+![image](https://wikimedia.org/api/rest_v1/media/math/render/svg/0a4c9a778656537624a3303e646559a429868863)
 
 Berikut adalah outputnya :
 
-![image](https://user-images.githubusercontent.com/87566521/139250214-086929de-b21b-48ab-9f58-8e29bff795a1.png)
-
+![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/fd06c6a9616d27649452110418d41a1d93f18042/visualization/tfidf.jpg)
+Langkah pertama, saya menggunakan TF-IDF Vectorizer untuk menemukan representasi fitur penting dari setiap genre anime. Fungsi yang saya gunakan adalah tfidfvectorizer() dari library sklearn. Berikut sebagian outputnya :
+![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/97c6b782ed5b9957ba61121b56466931267522a8/visualization/genre.jpg)
+Tahap pertama yang saya lakukan adalah TF-IDF Vectorizer
+TF-IDF Vectorizer digunakan untuk menemukan representasi fitur penting dari setiap genre anime.
 Langkah selanjutnya adalah saya menggunakan argpartition untuk mengambil sejumlah nilai k tertinggi dari similarity data kemudian mengambil data dari bobot (tingkat kesamaan) tertinggi ke terendah.
 
 Kemudian saya menguji akurasi dari sistem rekomendasi ini untuk menemukan rekomendasi Anime yang mirip dengan **Boruto: Naruto the Movie**. Berikut adalah detail informasi Anime **Boruto: Naruto the Movie** :
