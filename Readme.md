@@ -52,7 +52,7 @@ Data yang saya pakai adalah Database Rekomendasi Anime yang berisi informasi ten
 
 Saya juga melakukan eksplorasi data untuk memahami variabel-variabel pada data serta korelasi antar variabel. Berikut penjelasannya :
 
-**Anime.csv**
+ Data Loading sebagai berikut
 
 |anime_id|name                                                                                                |genre                                                                                                                        |type   |episodes|rating|members|
 |--------|----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|-------|--------|------|-------|
@@ -105,24 +105,17 @@ jumlah NaN 317 dari NaN yg ditemukan berdasarkan kolom :
 Ini adalah informasi yang didapatkan dari hasil eksplorasi pada variabel anime.
 
 #### Visualization Data
+![animeTypes](https://github.com/Fahlevi20/Recommendation-Anime/blob/f52c0bf4e9d630169a6d4321b2c0407dcf1dfc7a/visualization/anime%20Types.png)
 
-
-
-## Data Preprocessing
-
-Pada tahap ini, saya menggabungkan variabel anime dan variabel rating dengan fungsi merge dari library pandas. Berikut adalah hasil penggabungan variabel :
-
-![image](https://user-images.githubusercontent.com/87566521/139245032-7b8218cd-f37f-4f07-89fc-731f4f24713e.png)
-
-Setelah itu, saya mengganti nama kolom _name_ dan _ratinguser_ agar dapat lebih mudah dipahami. Berikut hasilnya :
-
-![image](https://user-images.githubusercontent.com/87566521/139245393-b77f6b46-2fc2-488d-9b77-733e96a282fc.png)
+Insight yang saya dapatkan disni adalah:
+- Anime Types "TV" yang paling banyak dibandingkan tipe lain
+- Anime Types "Music" yang paling sedikit dibandingkan tipe lain
 
 
 
 
 ## Data Preparation
-
+Sebelum datasetnya di latih atau training, dari model sebelumnya perlu melakukan data preparation dengan melakukan textmemeriksa rating dengan nilai -1 yang kemudian dianggap sebagai outlier dan saya ubah menjadi NaN lalu saya bersihkan. Setelah itu, saya membuat variabel fix_anime yang berisi dataframe hasil penggabungan variabel anime dan variabel rating kemudian saya urutkan berdasarkan ID anime.
 Pada data preparation, saya memeriksa rating dengan nilai -1 yang kemudian dianggap sebagai outlier dan saya ubah menjadi NaN lalu saya bersihkan. Setelah itu, saya membuat variabel fix_anime yang berisi dataframe hasil penggabungan variabel anime dan variabel rating kemudian saya urutkan berdasarkan ID anime.
 
 ![image](https://user-images.githubusercontent.com/87566521/139247004-6fcf2488-8242-4426-9d23-c30e56996e34.png)
