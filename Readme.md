@@ -10,11 +10,10 @@ Anime adalah istilah Bahasa Jepang yang berasal dari Bahasa Inggris yaitu _anima
 
 ### Problem Statements
 - Bagaimana cara membuat model _Machine Learning_ untuk merekomendasikan anime kepada pengguna yang dipersonalisasi dengan teknik _content-based filtering_?
-- Bagaimana cara membuat model _Machine Learning_ untuk merekomendasikan anime yang mungkin disukai dan belum pernah ditonton oleh pengguna?
 
 ### Goals
 - Membuat model _Machine Learning_ untuk menghasilkan sejumlah rekomendasi anime yang dipersonalisasi berdasarkan pengguna dengan teknik _content-based filtering_.
-- mengetahui hasil persentasi prediksi genre
+- mengetahui hasil *precision* dari *Genre.*
 
 ### Solution statements
 
@@ -24,21 +23,20 @@ Untuk menyelesaikan masalah ini, saya mengajukan sebuah solusi yaitu teknik _con
 
 ## Data Understanding
 
-![image](https://user-images.githubusercontent.com/87566521/139109868-1ef63ec2-d447-468a-926c-18691e8bd070.png)
+
 
 Berikut adalah informasi dari dataset yang digunakan pada proyek ini :
 
 | Jenis                   | Keterangan                                                                                               |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------|
-| Sumber                  | [Kaggle Dataset : Anime Recommendations Database](https://www.kaggle.com/CooperUnion/anime-recommendations-database) |
+| Sumber                  | [Anime Recommendations Database](https://www.kaggle.com/hernan4444/anime-recommendation-database-2020?select=anime.csv) |
 | Lisensi                 | CC0: Public Domain                                                                                       |
-| Kategori                | Anime, Manga                                                                                             |
-| Rating Penggunaan       | 8.2 (Gold)                                                                                               |
+| Kategori                | movies and tv shows, anime and manga, comics and animation, popular culture                                                                                     |
+| Usability       | 8.2                                                                                                |
 | Jenis dan Ukuran Berkas | CSV (112 MB)                                                                                             |
 
 Data yang saya pakai adalah Database Rekomendasi Anime yang berisi informasi tentang data preferensi pengguna dari 73.516 pengguna di 12.294 anime di myanimelist.net. dengan sebuah file yaitu Anime.csv yang memiliki 7 fitur. Berikut penjelasannya :
 
-**Anime.csv**
 
 1. `anime_id` ID unik yang mengidentifikasi anime
 2. `name` Judul anime
@@ -46,11 +44,8 @@ Data yang saya pakai adalah Database Rekomendasi Anime yang berisi informasi ten
 4. `type` movie, TV, OVA, dll
 5. `episodes` Jumlah episode (1 jika movie)
 6. `rating` Rata-rata rating untuk anime
-7. `member` Jumlah anggota komunitas yang ada di anime
+7. `members` Jumlah anggota komunitas yang ada di anime
 
-> *Catatan : kolom rating pada file Anime.csv adalah rating yang berasal dari ulasan pada situs web.*
-
-Saya juga melakukan eksplorasi data untuk memahami variabel-variabel pada data serta korelasi antar variabel. Berikut penjelasannya :
 
  Data Loading sebagai berikut
 
@@ -76,7 +71,7 @@ Saya juga melakukan eksplorasi data untuk memahami variabel-variabel pada data s
 |408     |Final Fantasy VII: Last Order                                                                       |Action, Adventure, Drama, Fantasy, Sci-Fi                                                                                    |OVA    |1       |7.46  |48041  |
 |32696   |Fukigen na Mononokean                                                                               |Comedy, Supernatural                                                                                                         |TV     |13      |7.46  |44786  |
 
-Berdasarkan output di atas, dapat diketahui bahwa file Anime.csv memiliki 12294 entri.
+- Berdasarkan output di atas, dapat diketahui bahwa file Anime.csv memiliki 12294 entri.
 
 |      |     anime_id |       rating  |     members|
 |------|--------------|---------------|-------------|
@@ -88,10 +83,12 @@ Berdasarkan output di atas, dapat diketahui bahwa file Anime.csv memiliki 12294 
 |50%|    10260.500000 |     6.570000 | 1.550000e+03|
 |75%|    24794.500000 |     7.180000 | 9.437000e+03|
 |max|    34527.000000 |    10.000000|  1.013917e+06|
-Dari output di atas, dapat disimpulkan bahwa nilai maksimum rating adalah 10 dan nilai minimumnya adalah 1.027 (1). Artinya, skala rating berkisar antara 1 hingga 10.
+
+- Dari output di atas, dapat disimpulkan bahwa nilai maksimum rating adalah 10 dan nilai minimumnya adalah 1.67 (1). Artinya, skala rating berkisar antara 1 hingga 10.
 Pada tahap ini, saya membersihkan data NaN lalu kemudian mengubah tipe data pada kolom rating menjadi integer untuk menyamakan dengan kolom rating pada variabel rating.
 
-jumlah NaN 317 dari NaN yg ditemukan berdasarkan kolom :
+- jumlah NaN 317 dari NaN yg ditemukan berdasarkan kolom :
+
 |Kolom|NaN|
 |-------------|---|
 |anime_id     | 0|
@@ -102,14 +99,14 @@ jumlah NaN 317 dari NaN yg ditemukan berdasarkan kolom :
 |rating  |    230|
 |members|       0|
 
-Ini adalah informasi yang didapatkan dari hasil eksplorasi pada variabel anime.
+- Ini adalah informasi yang didapatkan dari hasil eksplorasi pada variabel anime.
 
 #### Visualization Data
 ![animeTypes](https://github.com/Fahlevi20/Recommendation-Anime/blob/f52c0bf4e9d630169a6d4321b2c0407dcf1dfc7a/visualization/anime%20Types.png)
 
-Insight yang saya dapatkan disni adalah:
-- Anime Types "TV" yang paling banyak dibandingkan tipe lain
-- Anime Types "Music" yang paling sedikit dibandingkan tipe lain
+- Insight yang saya dapatkan disni adalah:
+  - Anime Types "TV" yang paling banyak dibandingkan tipe lain
+  - Anime Types "Music" yang paling sedikit dibandingkan tipe lain
 
 
 
@@ -123,77 +120,75 @@ melakukan duplikasi pada variabel **`df1`** lalu data duplikasi ditampung pada v
 
 ## Modeling and Result
 Pada Proyek yang dibuat, tahapan modelling yang digunakan dalam teknik sistem rekomendasi ***Content Based Filtering***. Karena dapat merekomendasikan pengguna berdasarkan konten genre. Sehingga acuan yang dibuat berdasarkan genre.
-#### Content-based Filtering
+### Content-based Filtering
 
-Langkah pertama, saya menggunakan TF-IDF Vectorizer untuk menemukan representasi fitur penting dari setiap genre anime. Fungsi yang saya gunakan adalah tfidfvectorizer() dari library sklearn. Berikut sebagian outputnya :
+- saya menggunakan TF-IDF Vectorizer untuk menemukan representasi fitur penting dari setiap genre anime. Fungsi yang saya gunakan adalah tfidfvectorizer() dari library sklearn. Berikut sebagian outputnya :
 ![genre](https://github.com/Fahlevi20/Recommendation-Anime/blob/97c6b782ed5b9957ba61121b56466931267522a8/visualization/genre.jpg)
-Selanjutnya saya melakukan fit dan transformasi ke dalam bentuk matriks. Outputnya adalah matriks yang merupakan matrik genre anime.
+- Selanjutnya saya melakukan fit dan transformasi ke dalam bentuk matriks. Outputnya adalah matriks yang merupakan matrik genre anime.
 Untuk menghitung derajat kesamaan (similarity degree) antar anime, saya menggunakan teknik cosine similarity dengan fungsi cosine_similarity dari library sklearn. Berikut adalah rumusnya :
 
-![image](https://wikimedia.org/api/rest_v1/media/math/render/svg/0a4c9a778656537624a3303e646559a429868863)
+![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/97429cbf2d4cfa4be90a05c89fe78f9da7a0d140/visualization/download.png)
 
-Berikut adalah outputnya :
+- Berikut adalah outputnya :
 
 ![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/fd06c6a9616d27649452110418d41a1d93f18042/visualization/tfidf.jpg)
-Langkah pertama, saya menggunakan TF-IDF Vectorizer untuk menemukan representasi fitur penting dari setiap genre anime. Fungsi yang saya gunakan adalah tfidfvectorizer() dari library sklearn. Berikut sebagian outputnya :
-![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/97c6b782ed5b9957ba61121b56466931267522a8/visualization/genre.jpg)
-Tahap pertama yang saya lakukan adalah TF-IDF Vectorizer
-TF-IDF Vectorizer digunakan untuk menemukan representasi fitur penting dari setiap genre anime.
+
 Langkah selanjutnya adalah saya menggunakan argpartition untuk mengambil sejumlah nilai k tertinggi dari similarity data kemudian mengambil data dari bobot (tingkat kesamaan) tertinggi ke terendah.
 
-Kemudian saya menguji akurasi dari sistem rekomendasi ini untuk menemukan rekomendasi Anime yang mirip dengan **Boruto: Naruto the Movie**. Berikut adalah detail informasi Anime **Boruto: Naruto the Movie** :
+Kemudian saya menguji akurasi dari sistem rekomendasi ini untuk menemukan rekomendasi Anime yang mirip dengan **One Pice**. Berikut adalah detail informasi Anime **One Piece** :
 
-![image](https://user-images.githubusercontent.com/87566521/139252515-90f2552a-6f19-41b8-8260-2a5b94f4e3a4.png)
+![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/0df7e2f9dafdbcbf019dfb7b27efa420c41a4954/visualization/rekom.jpg)
 
-Berdasarkan output di atas, dapat dilihat bahwa Anime dengan judul Boruto: Naruto the Movie memiliki genre Action, Comedy, Martial Arts, Shounen, dan Super Power. Rekomendasi yang diharapkan adalah Anime dengan genre yang sama.
+Berdasarkan output di atas, dapat dilihat bahwa Anime dengan judul One Piece memiliki genre Action, Adventure, Comedy, Drama, Fantasy, Shounen, dan Super Power. Rekomendasi yang diharapkan adalah Anime dengan genre yang sama.
 
 Berikut adalah rekomendasi yang diberikan oleh model yang telah dibuat :
 
-![image](https://user-images.githubusercontent.com/87566521/139252620-bae93aa7-4a40-4db0-a95e-10634f5995a5.png)
+![image](https://github.com/Fahlevi20/Recommendation-Anime/blob/b1bd58a0d7db5e5583430c2201c6f048bbdc97e2/visualization/rekomen%2010%20.jpg)
 
-Model berhasil memberikan rekomendasi 10 judul Anime dengan genre yang sama seperti yang diharapkan, yaitu Action, Comedy, Martial Arts, Shounen, dan Super Power.
+Model berhasil memberikan rekomendasi 10 judul Anime dengan genre yang sama seperti yang diharapkan, yaitu Action, Adventure, Comedy, Drama, Fantasy, Shounen, dan Super Power.
 
-### Collaborative Filtering
 
-Tahapan yang saya lakukan untuk membuat sistem rekomendasi dengan teknik Collaborative Filtering adalah menghapus kolom yang tidak digunakan, melakukan mapping pada `user_id` dan `anime_id`, lalu mengubah nilai rating menjadi float. Saya membagi data untuk training dan validasi dengan komposisi 80:20. Namun sebelumnya, saya mengacak datanya terlebih dahulu agar distribusinya menjadi random. Lalu saya memetakan (mapping) data user dan anime menjadi satu value terlebih dahulu. Kemudian membuat rating dalam skala 0 sampai 1 agar mudah dalam melakukan proses training. Berikut adalah outputnya :
-
-![image](https://user-images.githubusercontent.com/87566521/139253831-6a4f6097-8972-4cf4-a60b-f75919c0ee44.png)
-
-Saya melakukan proses embedding terhadap data user dan anime. Lalu melakukan operasi perkalian dot product antara embedding user dan anime. Selain itu, saya juga menambahkan bias untuk setiap user dan anime. Skor kecocokan ditetapkan dalam skala [0,1] dengan fungsi aktivasi sigmoid. Untuk mendapatkan rekomendasi anime, saya mengambil sampel user secara acak dan mendefinisikan variabel anime_not_watched yang merupakan daftar anime yang belum pernah ditonton oleh pengguna.
-
-Berikut adalah 10 rekomendasi anime untuk pengguna dengan ID 4643 :
-
-![image](https://user-images.githubusercontent.com/87566521/139254122-bc3530eb-3446-478f-8148-8e51130d3bf2.png)
 
 ## Evaluation
 
-Pada tahap ini, saya menggunakan Mean Absolute Error (MAE) dan Root Mean Squared Error (RMSE) sebagai metrics evaluation. Berikut penjelasannya :
+pada tahap ini, saya menggunakan metriks precision. Berikut penjelasannya :
 
-1. `Mean Absolute Error (MAE)` mengukur besarnya rata-rata kesalahan dalam serangkaian prediksi yang sudah dilatih kepada data yang akan dites, tanpa mempertimbangkan arahnya. Semakin rendah nilai MAE (mean absolute error) maka semakin baik dan akurat model yang dibuat.
+- **Precision** Adalah sebuah metrics yang digunakan untuk mengukur berapa jumlah prediksi benar yang telah dibuat.Berikut adalah rumusnya :
 
-Berikut rumusnya :
+![image](https://www.mydatamodels.com/wp-content/uploads/2020/10/5.-Precision-formula.png)
 
-![image](https://user-images.githubusercontent.com/87566521/139152819-30500f63-40a3-40ed-86fd-a62e517adbb4.png)
+Formula Precision  
+TP – True Positives  
+FP – False Positives  
+Precision – Accuracy of positive predictions.  
+Precision = TP/(TP + FP)
 
-Berikut adalah plottingnya :
+- kelebihan
+  - Sangat baik untuk klasifikasi
+  - Dokumen yang dipilih secara acak dari kumpulan dokumen yang diambil adalah relevan.
+  - Precision bagus untuk kasus di mana kelasnya seimbang
+- Kekurangan
+  - Tidak baik untuk data yang *Imbalance*
+  - hanya hasil teratas yang dikembalikan oleh sistem
 
-![image](https://user-images.githubusercontent.com/87566521/139255075-c754fea2-878f-4c91-9fd4-2eb2c3071a19.png)
+Untuk mengevaluasi model adalah menampung terlebih dahulu data anime yang akan menjadi data uji coba, dalam kasus ini saya mencoba untuk menampung data anime yang mempunyai judul "One Piece" dan saya tampung pada variabel **feature**
 
-2. `Root mean squared error (RMSE)` adalah aturan penilaian kuadrat yang juga mengukur besarnya rata-rata kesalahan. Sama seperti MAE, semakin rendahnya nilai root mean square error juga menandakan semakin baik model tersebut dalam melakukan prediksi.
+Lalu selanjutnya saya menampung genre yang ada pada data uji coba untuk selanjutnya dipakai untuk evaluasi model.
 
-Berikut rumusnya :
+Dan langkah terakhir yang saya lakukan adalah membuat perulangan berdasarkan genre pada data uji coba dan melakukan implementasi dari formula precision.
 
-![image](https://user-images.githubusercontent.com/87566521/139154262-7eca086f-2007-41e1-9737-5f9fe68a8f49.png)
+Berikut adalah hasil keluaran dari implementasi formula precision
 
-Berikut adalah plottingnya :
+```python
+Action: 100.0
+ Adventure: 100.0
+ Comedy: 100.0
+ Drama: 100.0
+ Fantasy: 100.0
+ Shounen: 100.0
+ Super Power: 100.0
+```
 
-![image](https://user-images.githubusercontent.com/87566521/139255363-73417d98-1749-488d-8c7f-034e305ea7e5.png)
 
-Berdasarkan plotting proses training yang telah dibuat, dapat dilihat bahwa proses training model cukup smooth dan model konvergen pada epochs sekitar 90. Dari hasil model ini, Mean Absolute Error yang didapat adalah 0.0077 pada training dan 0.1375 pada test. Untuk Root Mean Squared Error, diperoleh nilai error akhir sebesar 0.0126 pada training dan 0.1823 pada test. Hal ini menunjukan bahwa model ini memiliki error dibawah 20% jika menggunakan MAE dan dibawah 20% jika menggunakan RMSE.
+hasil yang diberikan cukup baik sehingga dari sini saya bisa mengetahui bahwa model yang saya kembangkan berjalan sesuai yang diharpkan
 
-## Conclusion
-
-Model Sistem rekomendasi Anime telah selesai dibuat dan model ini dapat digunakan untuk merekomendasikan data yang sebenarnya. Berdasarkan model tersebut, dapat diketahui bahwa sistem rekomendasi berbasis Collaborative Filtering dan Content-Based Filtering dapat merekomendasikan anime kepada pengguna seperti yang diharapkan. Namun, beberapa pengembangan lain masih dapat dilakukan untuk membuat model yang memiliki akurasi lebih tinggi.
-
-
-**---Ini adalah bagian akhir laporan---**
