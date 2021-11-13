@@ -13,13 +13,17 @@ Anime adalah istilah Bahasa Jepang yang berasal dari Bahasa Inggris yaitu _anima
 
 ### Goals
 - Membuat model _Machine Learning_ untuk menghasilkan sejumlah rekomendasi anime yang dipersonalisasi berdasarkan pengguna dengan teknik _content-based filtering_.
-- mengetahui hasil *precision* dari *Genre.*
+- Mengetahui tingkat akurasi model menggunakan metric *Precision* berdasarkan hasil rekomendasi yang diberikan.
 
 ### Solution statements
 
 Untuk menyelesaikan masalah ini, saya mengajukan sebuah solusi yaitu teknik _content-based filtering_. Berikut adalah penjelasan teknik-teknik yang akan digunakan untuk masalah ini :
 
 - **Content-Based Filtering** : Merupakan cara untuk memberi rekomendasi bedasarkan genre atau fitur pada item yang disukai oleh pengguna. _Content-based filtering_ mempelajari profil minat pengguna baru berdasarkan data dari objek yang telah dinilai pengguna.
+   - **Kelebihan** 
+   Kelebihan recommender system dengan pendekatan content-based filtering adalah memiliki kemampuan untuk merekomendasikan item (contoh: film, lagu, artikel dll) yang sifatnya baru bagi user, karena prinsip kerjanya yaitu dengan melihat diskripsi konten yang dikandung oleh item yang pernah diberi nilai rating tinggi sebelumnya oleh pengguna.
+   - **Kelemahan**
+   Penyaringan berbasis konten sulit untuk menghasilkan rekomendasi yang tidak teduga , karena semua informasi dipilih dan direkomendasikan berdasarkan konten dan yang kedua adalah tidak reliable (handal) tidak adanya ide, pendapat serta masukkan dari pengguna sebelumya yang sulit dianalis oleh komputer sehingga sulit untuk pengguna pemula memakai sistem ini secara efektif.
 
 ## Data Understanding
 
